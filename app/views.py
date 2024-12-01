@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import redirect
 from django.http import HttpResponse
 from app.oauth2 import DiscordWrapper, get_oauth2_link
+
 def index(request) -> HttpResponse:
     if not request.session.get('user', None):
         return HttpResponse(f"""
@@ -32,24 +33,21 @@ def index(request) -> HttpResponse:
 
 def oauth2(request) -> HttpResponse:
     if request.session.get('user', None):
-        return HttpResponse(f"""
-            You are already logged in as {request.session.get('user')['name']}
-        """)
-        pass
+        return redirect("index")
     wrapper = DiscordWrapper()
     if 'code' in request.GET:
-        result = wrapper.process_code(request.GET['code'])
+        code = request.GET['code']
+        result = wrapper.process_code(code)
+        if result is None:
+            return redirect("index")
         request.session['user'] = {
             'id': result['id'],
             'name': result['username'],
-            'avatar': result['avatar']
+            'avatar': result['avatar'],
         }
-        return HttpResponse(f"""
-        <p>You are logged in as {result['username']}</p>
-        <a href="/">Return</a>
-        """)
+        return redirect("index")
     return HttpResponse("404")
 
 def logout(request):
     request.session.flush()
-    return HttpResponse("You're logged out.")
+    return redirect("index")

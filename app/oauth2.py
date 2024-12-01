@@ -24,31 +24,54 @@ def get_user(token: str) -> dict:
 
 
 class DiscordWrapper:
+    AUTH = (settings.CLIENT_ID, settings.CLIENT_SECRET)
     HEADERS = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
+    OAUTH_TOKEN_URL = f'{settings.API_ENDPOINT}/oauth2/token'
 
     """
     Return access token response
     https://discord.com/developers/docs/topics/oauth2#authorization-code-grant-access-token-response
     """
 
-    def process_code(self, code: str) -> dict:
+    def process_code(self, code: str) -> dict | None:
         token = self.exchange_code(code)
+        if token is None:
+            return None
+
         user = get_user(token['access_token'])
+        self.revoke_access_token(token)
         return user
 
-    def exchange_code(self, code: str) -> dict:
+    def exchange_code(self, code: str) -> dict | None:
         data = {
             'grant_type': 'authorization_code',
             'code': code,
             'redirect_uri': settings.REDIRECT_URI,
         }
         r = requests.post(
-            f'{settings.API_ENDPOINT}/oauth2/token',
+            self.OAUTH_TOKEN_URL,
             data=data,
             headers=self.HEADERS,
             auth=(settings.CLIENT_ID, settings.CLIENT_SECRET)
         )
+        if r.status_code == 400:
+            return None
+        r.raise_for_status()
+        return r.json()
+
+    def revoke_access_token(self, access_token):
+        data = {
+            'token': access_token,
+            'token_type_hint': 'access_token'
+        }
+        r = requests.post(
+            self.OAUTH_TOKEN_URL + '/revoke',
+            auth=self.AUTH,
+            data=data,
+            headers=self.HEADERS,
+        )
+
         r.raise_for_status()
         return r.json()
