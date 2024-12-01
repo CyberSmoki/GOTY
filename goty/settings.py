@@ -21,7 +21,8 @@ REDIRECT_URI = env('REDIRECT_URI')
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'django.contrib.sessions'
+    'app',
+    'django.contrib.sessions',
 ]
 
 MIDDLEWARE = [
