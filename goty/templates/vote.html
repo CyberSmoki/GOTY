@@ -1,27 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pl">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Głosowanie</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="js/nav.js"></script>
-</head>
-
+{% include 'partial/head.html' with title='Głosowanie' %}
+<!-- 1 tura - dodac druga -->
 <body class="bg-dark text-white">
-    <div class="user-info" onclick="openNav()">
-        <span class="username" id="user-username">{current_user.username}</span>
-        <img src="{current_user.avatar}" alt="Avatar" id="user-avatar">
-    </div>
-    
-    <div id="myNavTab" class="nav-tab">
-        <span class="close-btn" onclick="closeNav()">&times;</span>
-        <a href="#vote">Głosowanie</a>
-        <a href="#results">Wyniki</a>
-        <a href="#logout">Wyloguj się</a>
-    </div>
+    {% include 'partial/nav.html' %}
     <div class="container py-5">
         <header class="text-center mb-5">
             <h1 class="display-4">Game of the Year Vote 2024</h1>
@@ -116,7 +100,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/vote.js"></script>
+    <script src="{% static 'js/vote.js' %}"></script>
 </body>
 
 </html>

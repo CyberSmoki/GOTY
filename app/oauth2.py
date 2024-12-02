@@ -23,6 +23,10 @@ def get_user(token: str) -> dict:
     return r.json()
 
 
+def get_avatar_link(user: dict) -> str:
+    return f"https://cdn.discordapp.com/avatars/{user['id']}/{user['avatar']}?size=96"
+
+
 class DiscordWrapper:
     AUTH = (settings.CLIENT_ID, settings.CLIENT_SECRET)
     HEADERS = {

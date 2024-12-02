@@ -1,0 +1,111 @@
+<p class="lead">
+    Lista gier nominowanych do Najlepszej Gry Roku 2024:
+</p>
+
+<table class="table table-dark table-bordered text-center mb-5">
+    <tbody class="result-table">
+        <tr>
+            <th>Grafika</th>
+            <td><img src="{games_won[0].image}" class="result-image"></td>
+            <td><img src="{games_won[1].image}" class="result-image"></td>
+            <td><img src="{games_won[2].image}" class="result-image"></td>
+            <td><img src="{games_won[3].image}" class="result-image"></td>
+            <td><img src="{games_won[4].image}" class="result-image"></td>
+            <td><img src="{games_won[5].image}" class="result-image"></td>
+        </tr>
+        <tr>
+            <th>Nazwa gry</th>
+            <td>{games_won[0].title}</td>
+            <td>{games_won[1].title}</td>
+            <td>{games_won[2].title}</td>
+            <td>{games_won[3].title}</td>
+            <td>{games_won[4].title}</td>
+            <td>{games_won[5].title}</td>
+        </tr>
+        <tr>
+            <th>Deweloper</th>
+            <td>{games_won[0].dev}</td>
+            <td>{games_won[1].dev}</td>
+            <td>{games_won[2].dev}</td>
+            <td>{games_won[3].dev}</td>
+            <td>{games_won[4].dev}</td>
+            <td>{games_won[5].dev}</td>
+        </tr>
+        <tr>
+            <th>Gatunek</th>
+            <td>{games_won[0].genre}</td>
+            <td>{games_won[1].genre}</td>
+            <td>{games_won[2].genre}</td>
+            <td>{games_won[3].genre}</td>
+            <td>{games_won[4].genre}</td>
+            <td>{games_won[5].genre}</td>
+        </tr>
+        <tr>
+            <th>Data wydania</th>
+            <td>{games_won[0].date}</td>
+            <td>{games_won[1].date}</td>
+            <td>{games_won[2].date}</td>
+            <td>{games_won[3].date}</td>
+            <td>{games_won[4].date}</td>
+            <td>{games_won[5].date}</td>
+        </tr>
+    </tbody>
+</table>
+
+<p class="lead">
+    Lista gier nominowanych do Najgorszej Gry Roku 2024:
+</p>
+
+<table class="table table-dark table-bordered text-center mb-5">
+    <tbody class="result-table">
+        <tr>
+            <th>Grafika</th>
+            <td><img src="{games_lost[0].image}" class="result-image"></td>
+            <td><img src="{games_lost[1].image}" class="result-image"></td>
+            <td><img src="{games_lost[2].image}" class="result-image"></td>
+            <td><img src="{games_lost[3].image}" class="result-image"></td>
+            <td><img src="{games_lost[4].image}" class="result-image"></td>
+            <td><img src="{games_lost[5].image}" class="result-image"></td>
+        </tr>
+        <tr>
+            <th>Nazwa gry</th>
+            <td>{games_lost[0].title}</td>
+            <td>{games_lost[1].title}</td>
+            <td>{games_lost[2].title}</td>
+            <td>{games_lost[3].title}</td>
+            <td>{games_lost[4].title}</td>
+            <td>{games_lost[5].title}</td>
+        </tr>
+        <tr>
+            <th>Deweloper</th>
+            <td>{games_lost[0].dev}</td>
+            <td>{games_lost[1].dev}</td>
+            <td>{games_lost[2].dev}</td>
+            <td>{games_lost[3].dev}</td>
+            <td>{games_lost[4].dev}</td>
+            <td>{games_lost[5].dev}</td>
+        </tr>
+        <tr>
+            <th>Gatunek</th>
+            <td>{games_lost[0].genre}</td>
+            <td>{games_lost[1].genre}</td>
+            <td>{games_lost[2].genre}</td>
+            <td>{games_lost[3].genre}</td>
+            <td>{games_lost[4].genre}</td>
+            <td>{games_lost[5].genre}</td>
+        </tr>
+        <tr>
+            <th>Data wydania</th>
+            <td>{games_lost[0].date}</td>
+            <td>{games_lost[1].date}</td>
+            <td>{games_lost[2].date}</td>
+            <td>{games_lost[3].date}</td>
+            <td>{games_lost[4].date}</td>
+            <td>{games_lost[5].date}</td>
+        </tr>
+    </tbody>
+</table>
+<p class="lead">
+    <h3>Wyniki</h3>
+</p>
+<canvas id="voteChart" class="mb-5"></canvas>

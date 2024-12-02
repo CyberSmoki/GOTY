@@ -1,35 +1,70 @@
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from app.oauth2 import DiscordWrapper, get_oauth2_link
+from app.oauth2 import DiscordWrapper, get_oauth2_link, get_avatar_link
+from django.shortcuts import render
+from django.conf import settings
+import datetime
+from icecream import ic
 
 def index(request) -> HttpResponse:
+    ic(request.session.get('user', None))
     if not request.session.get('user', None):
-        return HttpResponse(f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-        </head>
-        <body>
-        <a href="{get_oauth2_link()}">Authorize</a>
-        </body>
-        </html>
-        """)
+        return render(
+            request,
+            template_name='login.html'
+        )
     else:
-        user = request.session.get('user')
-        return HttpResponse(f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-        </head>
-        <body>
-        <p>
-        <img style="border-radius: 48px; height: 96px;" src="https://cdn.discordapp.com/avatars/{user['id']}/{user['avatar']}?size=96">
-        <h3>{user['name']}</h3>
-        </p>
-        <a href="/app/logout">Logout</a>
-        </body>
-        </html>
-        """)
+        return redirect("results", permanent=True)
+
+def login(request) -> HttpResponse:
+    return redirect(get_oauth2_link(), permanent=True)
+
+def results(request) -> HttpResponse:
+    user = request.session.get('user', None)
+    stage = 1
+    now = datetime.date.today()
+    stage_1_start = datetime.date.fromisoformat(settings.STAGES['1']['start'])
+    stage_1_end = datetime.date.fromisoformat(settings.STAGES['1']['end'])
+    stage_2_start = datetime.date.fromisoformat(settings.STAGES['2']['start'])
+    stage_2_end = datetime.date.fromisoformat(settings.STAGES['2']['end'])
+    status = 'waiting' if now < stage_1_start\
+        else 'active' if now <= stage_1_end\
+        else 'waiting_for_runoff' if now < stage_2_start\
+        else 'runoff' if now <= stage_2_end\
+        else 'finished'
+
+    return render(
+        request,
+        template_name='results.html',
+        context={
+            'user_name': user['name'] if user is not None else None,
+            'user_avatar': get_avatar_link(user) if user is not None else None,
+            'current_stage': stage,
+            'stage_1_start': stage_1_start,
+            'stage_1_end': stage_1_end,
+            'stage_2_start': stage_2_start,
+            'stage_2_end': stage_2_end,
+            'status': status,
+            'top_games': None,
+            'worst_games': None,
+            'results': None,
+        }
+    )
+
+def vote(request, stage: str) -> HttpResponse:
+    user = request.session.get('user', None)
+    if stage not in ['1', '2']:
+        return redirect("page404")
+    if not user:
+        return redirect("login")
+    return render(
+        request,
+        template_name='vote.html',
+        context={
+            'user_name': user['name'] if user is not None else None,
+            'user_avatar': get_avatar_link(user) if user is not None else None,
+        }
+    )
 
 def oauth2(request) -> HttpResponse:
     if request.session.get('user', None):
@@ -42,11 +77,11 @@ def oauth2(request) -> HttpResponse:
             return redirect("index")
         request.session['user'] = {
             'id': result['id'],
-            'name': result['username'],
+            'name': result['global_name'],
             'avatar': result['avatar'],
         }
         return redirect("index")
-    return HttpResponse("404")
+    return redirect("page404")
 
 def logout(request):
     request.session.flush()
