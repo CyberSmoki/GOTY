@@ -24,8 +24,10 @@ INSTALLED_APPS = [
     'app',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.humanize',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
+    'mathfilters',
 ]
 
 MIDDLEWARE = [

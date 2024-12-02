@@ -4,10 +4,11 @@ from app.oauth2 import DiscordWrapper, get_oauth2_link, get_avatar_link
 from django.shortcuts import render
 from django.conf import settings
 import datetime
+import random
 from icecream import ic
+from .models import Game
 
 def index(request) -> HttpResponse:
-    ic(request.session.get('user', None))
     if not request.session.get('user', None):
         return render(
             request,
@@ -33,6 +34,34 @@ def results(request) -> HttpResponse:
         else 'runoff' if now <= stage_2_end\
         else 'finished'
 
+    all_games = Game.objects.all()
+    games_ids = list(map(lambda game: game.id, all_games))
+
+    scores = {}
+
+    total_votes = random.randint(1, 100_000)
+    for game in all_games:
+        id = game.id
+        yes = random.randint(0, total_votes//2)
+        no = random.randint(0, total_votes//2)
+        scores[id] = {'yes': yes, 'no': no}
+
+    scores = dict(sorted(scores.items(), key=lambda item: item[1]['no']))
+    scores = dict(sorted(scores.items(), key=lambda item: item[1]['yes'] - item[1]['no'], reverse=True))
+    yes_scores = list(map(lambda k: scores[k]['yes'], scores))
+    no_scores = list(map(lambda k: scores[k]['no'], scores))
+    margin_scores = [yes_scores[i] - no_scores[i] for i in range(len(scores))]
+    game_names = list(map(lambda k: all_games.get(id=k).name, scores))
+
+    best_ids = list(scores)[:6]
+    worst_ids = list(scores)[-6:]
+
+    best_games = list(map(lambda k: all_games.get(id=k), list(scores)[:6]))
+    worst_games = list(map(lambda k: all_games.get(id=k), list(scores)[-6:]))
+
+    ic(best_games)
+    ic(worst_games)
+
     return render(
         request,
         template_name='results.html',
@@ -45,9 +74,22 @@ def results(request) -> HttpResponse:
             'stage_2_start': stage_2_start,
             'stage_2_end': stage_2_end,
             'status': status,
-            'top_games': None,
-            'worst_games': None,
-            'results': None,
+            'results': {
+                'best_games': {
+                    'data': best_games,
+                    'scores': margin_scores[:6],
+                },
+                'worst_games': {
+                    'data': worst_games,
+                    'scores': margin_scores[-6:],
+                },
+                'scores': {
+                    'games': game_names,
+                    'yes': yes_scores,
+                    'no': no_scores,
+                },
+                'total_votes': total_votes,
+            },
         }
     )
 

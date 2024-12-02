@@ -181,16 +181,21 @@ p.lead {
 }
 
 img.result-image{
+    max-height: 128px;
+    max-width: 260px;
     width: 100%;
+    border-radius: 5px;
     height: auto;
 }
 
 tbody.result-table tr th{
     cursor: default;
     user-select: none;
+    border-width: 0;
 }
 
 tbody.result-table tr th, tbody.result-table tr td{
     text-align: center;
     vertical-align: middle;
+    border-width: 0;
 }

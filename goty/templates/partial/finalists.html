@@ -1,0 +1,60 @@
+{% load humanize %}
+{% load mathfilters %}
+<table class="table table-dark table-bordered text-center mb-5">
+    <tbody class="result-table">
+        <tr>
+            <th></th>
+            {% for game in games.data %}
+            <td>
+                <img src="{{game.image_url}}" class="result-image">
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th></th>
+            {% for game in games.data %}
+            <td>
+                <h4>{{game.name}}</h4>
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th></th>
+            {% for game in games.data %}
+            <td>
+                <h6><i>{{game.developer}}</i></h6>
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>
+                Wynik
+            </th>
+            {% for score in games.scores %}
+            <td>
+                {{score|intcomma}} ({{score|div:results.total_votes|mul:100|floatformat:2}}%)
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>
+                Gatunek
+            </th>
+            {% for game in games.data %}
+            <td>
+                {{game.genre}}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>
+                Data wydania
+            </th>
+            {% for game in games.data %}
+            <td>
+                <i>{{game.release_date|date:"j E Y"}}</i>
+            </td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
