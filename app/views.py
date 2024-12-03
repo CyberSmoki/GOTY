@@ -160,8 +160,7 @@ def oauth2(request) -> HttpResponse:
             'name': result['global_name'],
             'avatar': result['avatar'],
         }
-        return redirect("index")
-    return redirect("page404")
+    return redirect("index")
 
 def logout(request):
     request.session.flush()

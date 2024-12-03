@@ -26,14 +26,16 @@
                 <p class="lead">
                     <h3>Koniec drugiej tury: {{ stage_2_end|date:"l, j E Y" }}</h3>
                 </p>
-                <button class="btn btn-primary btn-lg results-button" onclick="location.href='/vote/2'">
+                <button class="btn btn-primary btn-lg results-button" onclick="location.href='/vote?stage=2'">
                     Przejdź do głosowania
                 </button>
             {% endif %}
             {% if results_stage_1 is not None %}
-                    <button class="btn btn-secondary btn-lg results-button" onclick="location.href='/vote/1'">
+                {% if user.name is not None %}
+                    <button class="btn btn-secondary btn-lg results-button" onclick="location.href='/vote?stage=1'">
                         Zobacz swoje głosy w pierwszej turze
                     </button>
+                {% endif %}
                 <p class="lead">
                     <h3>
                         Wyniki pierwszej tury
