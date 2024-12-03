@@ -57,6 +57,12 @@ function handleCheckboxChange(selectedCheckbox, value) {
     const groupName = selectedCheckbox.name;
     const checkboxes = document.getElementsByName(groupName);
 
+    const voteData = {
+        stage: 1,
+        gameId: selectedCheckbox.name,
+        vote: Number(value)
+    };
+
     checkboxes.forEach(checkbox => {
         if (Number(checkbox.value) !== value) { 
             checkbox.checked = false;
@@ -66,7 +72,16 @@ function handleCheckboxChange(selectedCheckbox, value) {
     if(!selectedCheckbox.checked){
         const emptyVoteCheckbox = document.querySelector(`input[name="${groupName}"][value="0"]`);
         emptyVoteCheckbox.checked = true;
+        voteData.vote = 0;
     }
+
+    sendVote(voteData)
+        .then(result => {
+            console.log('Vote sent:', result);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
 
 function getVoteValue(groupName){
@@ -100,5 +115,26 @@ function filterTable() {
         }
 
         rows[i].style.display = match ? '' : 'none';
+    }
+}
+
+async function sendVote(voteData) {
+    try {
+        const response = await fetch('http://localhost:9090/SendVote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(voteData),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        throw error;
     }
 }
