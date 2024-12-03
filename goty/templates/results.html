@@ -1,153 +1,48 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wyniki</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/nav.js"></script>
-</head>
-
+{% include 'partial/head.html' with title='Wyniki' %}
 <body class="bg-dark text-white">
-    <div class="user-info" onclick="openNav()">
-        <span class="username" id="user-username">{current_user.username}</span>
-        <img src="{current_user.avatar}" alt="Avatar" id="user-avatar">
-    </div>
-    
-    <div id="myNavTab" class="nav-tab">
-        <span class="close-btn" onclick="closeNav()">&times;</span>
-        <a href="#vote">Głosowanie</a>
-        <a href="#results">Wyniki</a>
-        <a href="#logout">Wyloguj się</a>
-    </div>
-
+    {% include 'partial/nav.html' %}
     <div class="container py-5">
         <header class="text-center mb-5">
             <h1 class="display-4">Game of the Year Vote 2024</h1>
-
-            <!--<p class="lead">
-                Głosowanie wciąż trwa. Data zamknięcia głosowania: {end_date_YYYY-MM-DD} 
-            </p>-->
-
-            <p class="lead">
-                Lista gier nominowanych do Najlepszej Gry Roku 2024:
-            </p>
-
-            <table class="table table-dark table-bordered text-center mb-5">
-                <tbody class="result-table">
-                    <tr>
-                        <th>Grafika</th>
-                        <td><img src="{games_won[0].image}" class="result-image"></td>
-                        <td><img src="{games_won[1].image}" class="result-image"></td>
-                        <td><img src="{games_won[2].image}" class="result-image"></td>
-                        <td><img src="{games_won[3].image}" class="result-image"></td>
-                        <td><img src="{games_won[4].image}" class="result-image"></td>
-                        <td><img src="{games_won[5].image}" class="result-image"></td>
-                    </tr>
-                    <tr>
-                        <th>Nazwa gry</th>
-                        <td>{games_won[0].title}</td>
-                        <td>{games_won[1].title}</td>
-                        <td>{games_won[2].title}</td>
-                        <td>{games_won[3].title}</td>
-                        <td>{games_won[4].title}</td>
-                        <td>{games_won[5].title}</td>
-                    </tr>
-                    <tr>
-                        <th>Deweloper</th>
-                        <td>{games_won[0].dev}</td>
-                        <td>{games_won[1].dev}</td>
-                        <td>{games_won[2].dev}</td>
-                        <td>{games_won[3].dev}</td>
-                        <td>{games_won[4].dev}</td>
-                        <td>{games_won[5].dev}</td>
-                    </tr>
-                    <tr>
-                        <th>Gatunek</th>
-                        <td>{games_won[0].genre}</td>
-                        <td>{games_won[1].genre}</td>
-                        <td>{games_won[2].genre}</td>
-                        <td>{games_won[3].genre}</td>
-                        <td>{games_won[4].genre}</td>
-                        <td>{games_won[5].genre}</td>
-                    </tr>
-                    <tr>
-                        <th>Data wydania</th>
-                        <td>{games_won[0].date}</td>
-                        <td>{games_won[1].date}</td>
-                        <td>{games_won[2].date}</td>
-                        <td>{games_won[3].date}</td>
-                        <td>{games_won[4].date}</td>
-                        <td>{games_won[5].date}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p class="lead">
-                Lista gier nominowanych do Najgorszej Gry Roku 2024:
-            </p>
-
-            <table class="table table-dark table-bordered text-center mb-5">
-                <tbody class="result-table">
-                    <tr>
-                        <th>Grafika</th>
-                        <td><img src="{games_lost[0].image}" class="result-image"></td>
-                        <td><img src="{games_lost[1].image}" class="result-image"></td>
-                        <td><img src="{games_lost[2].image}" class="result-image"></td>
-                        <td><img src="{games_lost[3].image}" class="result-image"></td>
-                        <td><img src="{games_lost[4].image}" class="result-image"></td>
-                        <td><img src="{games_lost[5].image}" class="result-image"></td>
-                    </tr>
-                    <tr>
-                        <th>Nazwa gry</th>
-                        <td>{games_lost[0].title}</td>
-                        <td>{games_lost[1].title}</td>
-                        <td>{games_lost[2].title}</td>
-                        <td>{games_lost[3].title}</td>
-                        <td>{games_lost[4].title}</td>
-                        <td>{games_lost[5].title}</td>
-                    </tr>
-                    <tr>
-                        <th>Deweloper</th>
-                        <td>{games_lost[0].dev}</td>
-                        <td>{games_lost[1].dev}</td>
-                        <td>{games_lost[2].dev}</td>
-                        <td>{games_lost[3].dev}</td>
-                        <td>{games_lost[4].dev}</td>
-                        <td>{games_lost[5].dev}</td>
-                    </tr>
-                    <tr>
-                        <th>Gatunek</th>
-                        <td>{games_lost[0].genre}</td>
-                        <td>{games_lost[1].genre}</td>
-                        <td>{games_lost[2].genre}</td>
-                        <td>{games_lost[3].genre}</td>
-                        <td>{games_lost[4].genre}</td>
-                        <td>{games_lost[5].genre}</td>
-                    </tr>
-                    <tr>
-                        <th>Data wydania</th>
-                        <td>{games_lost[0].date}</td>
-                        <td>{games_lost[1].date}</td>
-                        <td>{games_lost[2].date}</td>
-                        <td>{games_lost[3].date}</td>
-                        <td>{games_lost[4].date}</td>
-                        <td>{games_lost[5].date}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p class="lead">
-                Wyniki głosowania:
-            </p>
-            <canvas id="voteChart" class="mb-5"></canvas>
+            {% if status == 'waiting' %}
+                <p class="lead">
+                    <h3>Początek pierwszej tury: {{ stage_1_start|date:"l, j E Y" }}</h3>
+                </p>
+            {% elif status == 'active' %}
+                <p>
+                    <h3>Koniec pierwszej tury: {{ stage_1_end|date:"l, j E Y" }}</h3>
+                </p>
+                <button class="btn btn-primary btn-lg results-button" onclick="location.href='/vote/1'">
+                    Przejdź do głosowania
+                </button>
+            {% elif status == 'waiting_for_runoff' %}
+                <p class="lead">
+                    <h3>Początek drugiej tury: {{ stage_2_start|date:"l, j E Y" }}</h3>
+                </p>
+            {% elif status == 'runoff' %}
+                <p class="lead">
+                    <h3>Koniec drugiej tury: {{ stage_2_end|date:"l, j E Y" }}</h3>
+                </p>
+                <button class="btn btn-primary btn-lg results-button" onclick="location.href='/vote/2'">
+                    Przejdź do głosowania
+                </button>
+            {% endif %}
+            {% if results_stage_1 is not None %}
+                    <button class="btn btn-secondary btn-lg results-button" onclick="location.href='/vote/1'">
+                        Zobacz swoje głosy w pierwszej turze
+                    </button>
+                <p class="lead">
+                    <h3>
+                        Wyniki pierwszej tury
+                    </h3>
+                </p>
+                {% include 'partial/approval_round.html' %}
+            {% endif %}
         </header>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/results.js"></script>
 </body>
-
 </html>

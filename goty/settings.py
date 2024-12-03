@@ -21,7 +21,13 @@ REDIRECT_URI = env('REDIRECT_URI')
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'django.contrib.sessions'
+    'app',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.humanize',
+    'django.contrib.sessions',
+    'django.contrib.staticfiles',
+    'mathfilters',
 ]
 
 MIDDLEWARE = [
@@ -50,7 +56,7 @@ ROOT_URLCONF = 'goty.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'goty/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,7 +86,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+STAGES = {
+    "1": {
+        "start": env('STAGE_1_START'),
+        "end": env('STAGE_1_END'),
+    },
+    "2": {
+        "start": env('STAGE_2_START'),
+        "end": env('STAGE_2_END'),
+    }
+}
+
+LANGUAGE_CODE = 'pl-PL'
 
 TIME_ZONE = 'Europe/Warsaw'
 
@@ -88,7 +105,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

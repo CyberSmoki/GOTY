@@ -1,0 +1,18 @@
+{% load static %}
+{% if user_name is not None %}
+<script src="{% static 'js/nav.js' %}"></script>
+<div class="user-info" onclick="openNav()">
+    <span class="username" id="user-username">{{ user_name|upper }}</span>
+    <img src="{{ user_avatar }}" alt="Avatar" id="user-avatar">
+</div>
+<div id="myNavTab" class="nav-tab">
+    <span class="close-btn" onclick="closeNav()">&times;</span>
+    <a href="/vote">Głosuj</a>
+    <a href="/results">Zobacz wyniki</a>
+    <a href="/app/logout">Wyloguj się</a>
+</div>
+{% else %}
+<div class="user-info" onclick="location.href='/app/login'">
+    <span class="username" id="user-username">Zaloguj się</span>
+</div>
+{% endif %}
