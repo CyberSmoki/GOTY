@@ -31,7 +31,7 @@
                 </button>
             {% endif %}
             {% if results_stage_1 is not None %}
-                {% if user.name is not None %}
+                {% if user_name is not None %}
                     <button class="btn btn-secondary btn-lg results-button" onclick="location.href='/vote?stage=1'">
                         Zobacz swoje głosy w pierwszej turze
                     </button>
