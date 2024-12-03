@@ -53,17 +53,17 @@
                         <td>{{ game.release_date|date:"c" }}</td>
                         <td>
                             <div class="action-buttons">
-                                <input type="checkbox" name="{{ game.id }}" id="tak-1" value="1"
+                                <input type="checkbox" name="{{ game.id }}" id="tak-{{ game.id }}" value="1"
                                     onclick="handleCheckboxChange(this, 1)">
-                                <label for="tak-1">Tak</label>
+                                <label for="tak-{{ game.id }}">Tak</label>
 
-                                <input type="checkbox" name="{{ game.id }}" id="nie-1" value="-1"
+                                <input type="checkbox" name="{{ game.id }}" id="nie-{{ game.id }}" value="-1"
                                     onclick="handleCheckboxChange(this, -1)">
-                                <label for="nie-1">Nie</label>
+                                <label for="nie-{{ game.id }}">Nie</label>
 
-                                <input type="checkbox" name="{{ game.id }}" id="brak-1" value="0"
+                                <input type="checkbox" name="{{ game.id }}" id="brak-{{ game.id }}" value="0"
                                     onclick="handleCheckboxChange(this, 0)">
-                                <label for="brak-1" style="display:none;">Brak</label>
+                                <label for="brak-{{ game.id }}" style="display:none;">Brak</label>
                             </div>
                         </td>
                     </tr>
