@@ -72,7 +72,6 @@ def results(request) -> HttpResponse:
             no = row['negative_votes']
             scores[id] = {'yes': yes, 'no': no}
 
-
         scores = dict(sorted(scores.items(), key=lambda item: item[1]['no']))
         scores = dict(sorted(scores.items(), key=lambda item: item[1]['yes'] - item[1]['no'], reverse=True))
         yes_scores = list(map(lambda k: scores[k]['yes'], scores))
@@ -128,8 +127,10 @@ def results(request) -> HttpResponse:
         }
     )
 
-def vote(request, stage: str) -> HttpResponse:
+def vote(request) -> HttpResponse:
+    stage = request.GET.get('stage', '1')
     user = request.session.get('user', None)
+    games = Game.objects.all()
     if stage not in ['1', '2']:
         return HttpResponseNotFound('Podana tura nie istnieje')
     if not user:
@@ -138,6 +139,8 @@ def vote(request, stage: str) -> HttpResponse:
         request,
         template_name='vote.html',
         context={
+            'games': games,
+            'stage': stage,
             'user_name': user['name'] if user is not None else None,
             'user_avatar': get_avatar_link(user) if user is not None else None,
         }

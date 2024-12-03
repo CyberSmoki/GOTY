@@ -3,13 +3,13 @@
 <html lang="pl">
 
 {% include 'partial/head.html' with title='Głosowanie' %}
-<!-- 1 tura - dodac druga -->
 <body class="bg-dark text-white">
     {% include 'partial/nav.html' %}
     <div class="container py-5">
         <header class="text-center mb-5">
             <h1 class="display-4">Game of the Year Vote 2024</h1>
             <p class="lead">
+                <!-- przydałoby się to trochę zmienić -->
                 Poniżej znajdziesz listę większych premier z roku 2024. Aby ją nominować, naciśnij przycisk Tak w
                 kolumnie Głos, natomiast jeśli uważasz że gra nie zasługuje na nominację, naciśnij przycisk Nie. Jeśli
                 nie chcesz nominować gry, odznacz wcześniej zaznaczoną opcję. 6 gier o najlepszym wyniku głosowania
@@ -24,6 +24,7 @@
         <div class="mb-3">
             <input type="text" id="searchInput" class="form-control" placeholder="Wyszukaj..." oninput="filterTable()">
         </div>
+        {% if stage == '1' %}
         <div class="table-responsive">
             <table id="sortableTable" class="table table-dark table-striped table-bordered align-middle">
                 <thead>
@@ -41,63 +42,38 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for game in games %}
                     <tr>
                         <td class="game-image-col">
-                            <img src="{games[i].image}" class="game-image">
+                            <img src="{{game.image_url}}" class="game-image">
                         </td>
-                        <td>{games[i].title}</td>
-                        <td>{games[i].dev}</td>
-                        <td>{games[i].genre}</td>
-                        <td>{games[i].date}</td>
+                        <td>{{ game.name }}</td>
+                        <td>{{ game.developer }}</td>
+                        <td>{{ game.genre }}</td>
+                        <td>{{ game.release_date|date:"c" }}</td>
                         <td>
-                            <!--
-                                After voting example
-                            -->
                             <div class="action-buttons">
-                                <input type="checkbox" name="glos-1" id="tak-1" value="1" disabled
+                                <input type="checkbox" name="{{ game.id }}" id="tak-1" value="1"
                                     onclick="handleCheckboxChange(this, 1)">
                                 <label for="tak-1">Tak</label>
 
-                                <input type="checkbox" name="glos-1" id="nie-1" value="-1" checked disabled
+                                <input type="checkbox" name="{{ game.id }}" id="nie-1" value="-1"
                                     onclick="handleCheckboxChange(this, -1)">
                                 <label for="nie-1">Nie</label>
 
-                                <input type="checkbox" name="glos-1" id="brak-1" value="0" disabled  
+                                <input type="checkbox" name="{{ game.id }}" id="brak-1" value="0"
                                     onclick="handleCheckboxChange(this, 0)">
                                 <label for="brak-1" style="display:none;">Brak</label>
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="game-image-col">
-                            <img src="{games[i].image}" class="game-image">
-                        </td>
-                        <td>{games[i].title}</td>
-                        <td>{games[i].dev}</td>
-                        <td>{games[i].genre}</td>
-                        <td>{games[i].date}</td>
-                        <td>
-                            <!--
-                                Before voting example
-                            -->
-                            <div class="action-buttons">
-                                <input type="checkbox" name="glos-2" id="tak-2" value="1" 
-                                    onclick="handleCheckboxChange(this, 1)">
-                                <label for="tak-2">Tak</label>
-
-                                <input type="checkbox" name="glos-2" id="nie-2" value="-1"
-                                    onclick="handleCheckboxChange(this, -1)">
-                                <label for="nie-2">Nie</label>
-
-                                <input type="checkbox" name="glos-2" id="brak-2" value="0" checked 
-                                    onclick="handleCheckboxChange(this, 0)">
-                                <label for="brak-2" style="display:none;">Brak</label>
-                            </div>
-                        </td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
+        {% elif stage == '2' %}
+        Obecnie nie ma możliwości zagłosowania w turze 2.
+        {% endif %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/vote.js' %}"></script>
