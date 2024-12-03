@@ -1,20 +1,40 @@
 {% load static %}
+{% load humanize %}
 <p class="lead">
-    Lista gier nominowanych do Najlepszej Gry Roku 2024:
+    Liczba gier: <b>{{ results_stage_1.games_count|intcomma }}</b>
 </p>
-{% include 'partial/finalists.html' with games=results.best_games %}
 <p class="lead">
-    Lista gier nominowanych do Najgorszej Gry Roku 2024:
+    Liczba głosujących w pierwszej turze: <b>{{ results_stage_1.total_voters|intcomma }}</b>
 </p>
-{% include 'partial/finalists.html' with games=results.worst_games %}
+<p class="lead">
+    Łączna liczba głosów: <b>{{ results_stage_1.total_votes|intcomma }}</b>
+</p>
+<p class="lead">
+    Liczba głosów za: <b>{{ results_stage_1.positive_votes|intcomma }}</b>
+</p>
+<p class="lead">
+    Liczba głosów przeciw: <b>{{ results_stage_1.negative_votes|intcomma }}</b>
+</p>
+<p class="lead">
+    <h3>
+        Lista gier nominowanych do Najlepszej Gry Roku 2024:
+    </h3>
+</p>
+{% include 'partial/finalists.html' with games=results_stage_1.best_games %}
+<p class="lead">
+    <h3>
+        Lista gier nominowanych do Najgorszej Gry Roku 2024:
+    </h3>
+</p>
+{% include 'partial/finalists.html' with games=results_stage_1.worst_games %}
 <p class="lead">
     <h3>Wyniki</h3>
 </p>
 <script>
-    const totalVotes = {{ results.total_votes }};
-    const gameNames = {{ results.scores.games|safe }};
-    const yesVotes = {{ results.scores.yes }};
-    const noVotes = {{ results.scores.no }};
+    const totalVotes = {{ results_stage_1.total_voters }};
+    const gameNames = {{ results_stage_1.scores.games|safe }};
+    const yesVotes = {{ results_stage_1.scores.yes }};
+    const noVotes = {{ results_stage_1.scores.no }};
 
     document.addEventListener('DOMContentLoaded', () => {
         const ctx = document.getElementById('voteChart').getContext('2d');

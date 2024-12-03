@@ -3,10 +3,12 @@ from django.http import HttpResponse
 from app.oauth2 import DiscordWrapper, get_oauth2_link, get_avatar_link
 from django.shortcuts import render
 from django.conf import settings
+from django.http import HttpResponseNotFound
 import datetime
 import random
 from icecream import ic
-from .models import Game
+from django.db.models import Count, Q
+from .models import Game, Votes
 
 def index(request) -> HttpResponse:
     if not request.session.get('user', None):
@@ -34,33 +36,81 @@ def results(request) -> HttpResponse:
         else 'runoff' if now <= stage_2_end\
         else 'finished'
 
-    all_games = Game.objects.all()
-    games_ids = list(map(lambda game: game.id, all_games))
+    if status in ['waiting_for_runoff', 'runoff', 'finished']:
+        best_indices = slice(None, 6)
+        worst_indices = slice(-6, None)
 
-    scores = {}
+        all_games = Game.objects.all()
+        results = (
+            Votes.objects
+            .select_related('game_id')  # Fetch related Game data
+            .values('game_id', 'game_id__name', 'game_id__developer', 'stage')  # Grouping fields
+            .annotate(
+                positive_votes=Count('value', filter=Q(value=1)),  # Count votes = 1
+                negative_votes=Count('value', filter=Q(value=-1))  # Count votes = -1
+            )
+        )
+        games_count = len(all_games)
+        total_votes_count = Votes.objects.aggregate(
+            total_votes=Count('id')
+        )['total_votes']
+        distinct_voters_count = Votes.objects.aggregate(
+            distinct_voters=Count('user_id', distinct=True)
+        )['distinct_voters']
+        positive_votes_count = Votes.objects.aggregate(
+            positive_votes=Count('id', filter=Q(value=1))
+        )['positive_votes']
+        negative_votes_count = Votes.objects.aggregate(
+            negative_votes=Count('id', filter=Q(value=-1))
+        )['negative_votes']
 
-    total_votes = random.randint(1, 100_000)
-    for game in all_games:
-        id = game.id
-        yes = random.randint(0, total_votes//2)
-        no = random.randint(0, total_votes//2)
-        scores[id] = {'yes': yes, 'no': no}
+        scores = {}
 
-    scores = dict(sorted(scores.items(), key=lambda item: item[1]['no']))
-    scores = dict(sorted(scores.items(), key=lambda item: item[1]['yes'] - item[1]['no'], reverse=True))
-    yes_scores = list(map(lambda k: scores[k]['yes'], scores))
-    no_scores = list(map(lambda k: scores[k]['no'], scores))
-    margin_scores = [yes_scores[i] - no_scores[i] for i in range(len(scores))]
-    game_names = list(map(lambda k: all_games.get(id=k).name, scores))
+        for row in results:
+            id = row['game_id']
+            yes = row['positive_votes']
+            no = row['negative_votes']
+            scores[id] = {'yes': yes, 'no': no}
 
-    best_ids = list(scores)[:6]
-    worst_ids = list(scores)[-6:]
 
-    best_games = list(map(lambda k: all_games.get(id=k), list(scores)[:6]))
-    worst_games = list(map(lambda k: all_games.get(id=k), list(scores)[-6:]))
+        scores = dict(sorted(scores.items(), key=lambda item: item[1]['no']))
+        scores = dict(sorted(scores.items(), key=lambda item: item[1]['yes'] - item[1]['no'], reverse=True))
+        yes_scores = list(map(lambda k: scores[k]['yes'], scores))
+        no_scores = list(map(lambda k: scores[k]['no'], scores))
+        margin_scores = [yes_scores[i] - no_scores[i] for i in range(len(scores))]
+        game_names = list(map(lambda k: all_games.get(id=k).name, scores))
 
-    ic(best_games)
-    ic(worst_games)
+        best_games = list(map(lambda k: all_games.get(id=k), list(scores)[best_indices]))
+        worst_games = list(map(lambda k: all_games.get(id=k), list(scores)[worst_indices]))
+
+        ic(best_games)
+        ic(worst_games)
+        results_stage_1 = {
+            'best_games': {
+                'data': best_games,
+                'margins': margin_scores[best_indices],
+                'positive': yes_scores[best_indices],
+                'negative': no_scores[best_indices],
+            },
+            'worst_games': {
+                'data': worst_games,
+                'margins': margin_scores[worst_indices],
+                'positive': yes_scores[worst_indices],
+                'negative': no_scores[worst_indices],
+            },
+            'scores': {
+                'games': game_names,
+                'yes': yes_scores,
+                'no': no_scores,
+            },
+            'games_count': games_count,
+            'total_votes': total_votes_count,
+            'total_voters': distinct_voters_count,
+            'positive_votes': positive_votes_count,
+            'negative_votes': negative_votes_count,
+        }
+    else:
+        results_stage_1 = None
 
     return render(
         request,
@@ -74,29 +124,14 @@ def results(request) -> HttpResponse:
             'stage_2_start': stage_2_start,
             'stage_2_end': stage_2_end,
             'status': status,
-            'results': {
-                'best_games': {
-                    'data': best_games,
-                    'scores': margin_scores[:6],
-                },
-                'worst_games': {
-                    'data': worst_games,
-                    'scores': margin_scores[-6:],
-                },
-                'scores': {
-                    'games': game_names,
-                    'yes': yes_scores,
-                    'no': no_scores,
-                },
-                'total_votes': total_votes,
-            },
+            'results_stage_1': results_stage_1,
         }
     )
 
 def vote(request, stage: str) -> HttpResponse:
     user = request.session.get('user', None)
     if stage not in ['1', '2']:
-        return redirect("page404")
+        return HttpResponseNotFound('Podana tura nie istnieje')
     if not user:
         return redirect("login")
     return render(

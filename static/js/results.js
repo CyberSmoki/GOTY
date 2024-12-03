@@ -44,7 +44,7 @@ function populateChartData() {
             {
                 label: 'Nie (przewaga)',
                 data: winningNoVotes,
-                backgroundColor: 'rgba(192, 99, 132, 0.5)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 0,
                 maxBarThickness: maxBarThickness,
