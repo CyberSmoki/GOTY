@@ -45,7 +45,9 @@
                     {% for game in games %}
                     <tr>
                         <td class="game-image-col">
-                            <img src="{{game.image_url}}" class="game-image">
+                            <div class="game-image-container">
+                                <img src="{{game.image_url}}" class="game-image big-game-image">
+                            </div>
                         </td>
                         <td>{{ game.name }}</td>
                         <td>{{ game.developer }}</td>

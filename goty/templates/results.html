@@ -41,10 +41,15 @@
                         Wyniki pierwszej tury
                     </h3>
                 </p>
-                {% include 'partial/approval_round.html' %}
             {% endif %}
         </header>
     </div>
+    <div class="results">
+        {% if results_stage_1 is not None %}
+        {% include 'partial/approval_round.html' %}
+        {% endif %}
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

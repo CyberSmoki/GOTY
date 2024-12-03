@@ -3,10 +3,12 @@
 <table class="table table-dark table-bordered text-center mb-5">
     <tbody class="result-table">
         <tr>
-            <th></th>
+            <th style="width: 10%;"></th>
             {% for game in games.data %}
-            <td>
-                <img src="{{game.image_url}}" class="result-image">
+            <td class="table-images">
+                <div class="game-image-container-small">
+                    <img src="{{game.image_url}}" class="game-image small-game-image">
+                </div>
             </td>
             {% endfor %}
         </tr>

@@ -50,8 +50,18 @@ select.form-select:focus {
 }
 
 img.game-image{
-    width: 230px; 
-    height: auto;
+    object-fit: cover;
+    object-position: center;
+}
+
+img.small-game-image{
+    width: 175px;
+    height: 80px;
+}
+
+img.big-game-image{
+    width: 230px;
+    height: 107.5px;
 }
 
 td.game-image-col{
@@ -198,4 +208,25 @@ tbody.result-table tr th, tbody.result-table tr td{
     text-align: center;
     vertical-align: middle;
     border-width: 0;
+}
+
+.game-image-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.game-image-container-small{
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.results{
+    margin-left: 3%;
+    margin-right: 3%;
+}
+
+.table-images{
+    width: 15%;
 }
