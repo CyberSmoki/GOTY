@@ -7,6 +7,7 @@ import random
 from app.models import Game, Votes
 from django.db import transaction
 
+
 def dynamic_weights():
     negative_weight = random.uniform(0.45, 0.5)
     positive_weight = random.uniform(0.4, 0.5)

@@ -77,7 +77,7 @@ function handleCheckboxChange(selectedCheckbox, value) {
 
     sendVote(voteData)
         .then(result => {
-            console.log('Vote sent:', result);
+            console.log('Vote sent:', voteData, result);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -120,7 +120,7 @@ function filterTable() {
 
 async function sendVote(voteData) {
     try {
-        const response = await fetch('http://localhost:9090/SendVote', {
+        const response = await fetch('/app/vote', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -1,14 +1,15 @@
 from django.shortcuts import redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from app.oauth2 import DiscordWrapper, get_oauth2_link, get_avatar_link
 from django.shortcuts import render
 from django.conf import settings
-from django.http import HttpResponseNotFound
 import datetime
-import random
-from icecream import ic
 from django.db.models import Count, Q
 from .models import Game, Votes
+from icecream import ic
+from urllib.parse import unquote
+import json
+import uuid
 
 def index(request) -> HttpResponse:
     if not request.session.get('user', None):
@@ -156,6 +157,75 @@ def vote(request) -> HttpResponse:
             'user_votes': user_votes,
         }
     )
+
+
+def vote_post(request) -> JsonResponse:
+    now = datetime.date.today()
+    stage_1_start = datetime.date.fromisoformat(settings.STAGES['1']['start'])
+    stage_1_end = datetime.date.fromisoformat(settings.STAGES['1']['end'])
+    stage_2_start = datetime.date.fromisoformat(settings.STAGES['2']['start'])
+    stage_2_end = datetime.date.fromisoformat(settings.STAGES['2']['end'])
+
+    status = 'waiting' if now < stage_1_start\
+        else 'active' if now <= stage_1_end\
+        else 'waiting_for_runoff' if now < stage_2_start\
+        else 'runoff' if now <= stage_2_end\
+        else 'finished'
+
+    stage_statuses = {
+        'active': 1,
+        'runoff': 2,
+    }
+
+    if status not in stage_statuses:
+        return JsonResponse({'status': '403', 'reason': 'Voting is inactive'})
+
+    user = request.session.get('user')
+    if user is None:
+        return JsonResponse({'status': '401', 'reason': 'User is not logged in'})
+
+    data = request.body
+    data = str(data, encoding='utf-8')
+    data = unquote(data)
+    data = json.loads(data)
+
+    stage = data.get('stage')
+    if stage_statuses[status] != stage:
+        return JsonResponse({'status': '403', 'reason': 'Wrong stage of voting'})
+
+    game_id = data.get('gameId')
+    stage_games = {
+        1: list(value['id'] for value in Game.objects.all().values('id')),
+        2: None,
+    }
+    # TODO: place here six best and worst games from the first stage
+
+    if game_id is None or uuid.UUID(game_id) not in stage_games[stage]:
+        return JsonResponse({'status': '400', 'reason': 'Tried to vote for nonexistent game'})
+
+    vote_value = data.get('vote')
+
+    stage_votes = {
+        'active': [-1, 0, 1],
+        'runoff': None, # then we expect only gameId since it's single choice
+    }
+
+    if vote_value not in stage_votes[status]:
+        return JsonResponse({'status': '403', 'reason': 'Wrong vote value'})
+
+    if stage == 1:
+        Votes.objects.update_or_create(
+            user_id=user['id'],
+            game_id_id=game_id,
+            stage=stage,
+            defaults={'value': vote_value}
+        )
+    elif stage == 2:
+        return JsonResponse({'status': '501', 'reason': 'Stage 2 not implemented yet'})
+        pass
+        # TODO - remove all votes for user games in best/worst category and insert vote for given game
+    return JsonResponse({'status': '200'})
+
 
 def oauth2(request) -> HttpResponse:
     if request.session.get('user', None):
