@@ -44,10 +44,10 @@ def results(request) -> HttpResponse:
         results = (
             Votes.objects
             .select_related('game_id')  # Fetch related Game data
-            .values('game_id', 'game_id__name', 'game_id__developer', 'stage')  # Grouping fields
+            .values('game_id', 'game_id__name', 'game_id__developer', 'stage')
             .annotate(
-                positive_votes=Count('value', filter=Q(value=1)),  # Count votes = 1
-                negative_votes=Count('value', filter=Q(value=-1))  # Count votes = -1
+                positive_votes=Count('value', filter=Q(value=1)),
+                negative_votes=Count('value', filter=Q(value=-1)),
             )
         )
         games_count = len(all_games)
@@ -82,8 +82,6 @@ def results(request) -> HttpResponse:
         best_games = list(map(lambda k: all_games.get(id=k), list(scores)[best_indices]))
         worst_games = list(map(lambda k: all_games.get(id=k), list(scores)[worst_indices]))
 
-        ic(best_games)
-        ic(worst_games)
         results_stage_1 = {
             'best_games': {
                 'data': best_games,
@@ -127,14 +125,26 @@ def results(request) -> HttpResponse:
         }
     )
 
+
 def vote(request) -> HttpResponse:
     stage = request.GET.get('stage', '1')
     user = request.session.get('user', None)
-    games = Game.objects.all()
     if stage not in ['1', '2']:
         return HttpResponseNotFound('Podana tura nie istnieje')
     if not user:
         return redirect("login")
+
+    games = Game.objects.all()
+    user_votes = (
+        {
+            vote['game_id']: vote['value']
+            for vote in Votes.objects.filter(
+                user_id=user['id'],
+                stage=int(stage),
+            ).values('game_id', 'value')
+        }
+    )
+
     return render(
         request,
         template_name='vote.html',
@@ -143,6 +153,7 @@ def vote(request) -> HttpResponse:
             'stage': stage,
             'user_name': user['name'] if user is not None else None,
             'user_avatar': get_avatar_link(user) if user is not None else None,
+            'user_votes': user_votes,
         }
     )
 

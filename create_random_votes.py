@@ -22,7 +22,7 @@ df = pd.DataFrame({
 
 game_ids = list(Game.objects.values_list('id', flat=True))
 
-num_users = 440
+num_users = 0
 vote_values = [-1, 1, 0]
 
 data = []

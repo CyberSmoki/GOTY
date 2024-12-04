@@ -1,84 +1,92 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="pl">
 
 {% include 'partial/head.html' with title='Głosowanie' %}
 <body class="bg-dark text-white">
-    {% include 'partial/nav.html' %}
-    <div class="container py-5">
-        <header class="text-center mb-5">
-            <h1 class="display-4">Game of the Year Vote 2024</h1>
-            <p class="lead">
-                <!-- przydałoby się to trochę zmienić -->
-                Poniżej znajdziesz listę większych premier z roku 2024. Aby ją nominować, naciśnij przycisk Tak w
-                kolumnie Głos, natomiast jeśli uważasz że gra nie zasługuje na nominację, naciśnij przycisk Nie. Jeśli
-                nie chcesz nominować gry, odznacz wcześniej zaznaczoną opcję. 6 gier o najlepszym wyniku głosowania
-                przejdzie do wyboru gry roku 2024, a 6
-                gier o najgorszym wyniku przejdzie do wyboru najgorszej gry roku 2024. Twoje wybory zapisują się w
-                czasie rzeczywistym.
-            </p>
-            <!--<p class="lead">
-                Głosowanie zostało zakończone. Poniżej znajdują się oddane przez ciebie głosy. Jeśli chcesz zobaczyć wyniki głosowania, przejdź na stronę Wyniki.
-            </p>-->
-        </header>
-        <div class="mb-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Wyszukaj..." oninput="filterTable()">
-        </div>
-        {% if stage == '1' %}
-        <div class="table-responsive">
-            <table id="sortableTable" class="table table-dark table-striped table-bordered align-middle">
-                <thead>
-                    <tr>
-                        <th scope="col">Grafika</th>
-                        <th scope="col" onclick="sortTable(1)" class="sortable">Tytuł<span id="arrow-1"
-                                class="sort-arrow"></span></th>
-                        <th scope="col" onclick="sortTable(2)" class="sortable">Deweloper<span id="arrow-2"
-                                class="sort-arrow"></span></th>
-                        <th scope="col" onclick="sortTable(3)" class="sortable">Gatunek<span id="arrow-3"
-                                class="sort-arrow"></span></th>
-                        <th scope="col" onclick="sortTable(4)" class="sortable">Data wydania<span id="arrow-4"
-                                class="sort-arrow"></span></th>
-                        <th scope="col">Głos</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for game in games %}
-                    <tr>
-                        <td class="game-image-col">
-                            <div class="game-image-container">
-                                <img src="{{game.image_url}}" class="game-image big-game-image">
-                            </div>
-                        </td>
-                        <td>{{ game.name }}</td>
-                        <td>{{ game.developer }}</td>
-                        <td>{{ game.genre }}</td>
-                        <td>{{ game.release_date|date:"c" }}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <input type="checkbox" name="{{ game.id }}" id="tak-{{ game.id }}" value="1"
-                                    onclick="handleCheckboxChange(this, 1)">
-                                <label for="tak-{{ game.id }}">Tak</label>
-
-                                <input type="checkbox" name="{{ game.id }}" id="nie-{{ game.id }}" value="-1"
-                                    onclick="handleCheckboxChange(this, -1)">
-                                <label for="nie-{{ game.id }}">Nie</label>
-
-                                <input type="checkbox" name="{{ game.id }}" id="brak-{{ game.id }}" value="0"
-                                    onclick="handleCheckboxChange(this, 0)">
-                                <label for="brak-{{ game.id }}" style="display:none;">Brak</label>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% elif stage == '2' %}
-        Obecnie nie ma możliwości zagłosowania w turze 2.
-        {% endif %}
+{% include 'partial/nav.html' %}
+<div class="container py-5">
+    <header class="text-center mb-5">
+        <h1 class="display-4">Game of the Year Vote 2024</h1>
+        <p class="lead">
+            <!-- przydałoby się to trochę zmienić -->
+            Poniżej znajdziesz listę większych premier z roku 2024. Aby ją nominować, naciśnij przycisk Tak w
+            kolumnie Głos, natomiast jeśli uważasz że gra nie zasługuje na nominację, naciśnij przycisk Nie. Jeśli
+            nie chcesz nominować gry, odznacz wcześniej zaznaczoną opcję. 6 gier o najlepszym wyniku głosowania
+            przejdzie do wyboru gry roku 2024, a 6
+            gier o najgorszym wyniku przejdzie do wyboru najgorszej gry roku 2024. Twoje wybory zapisują się w
+            czasie rzeczywistym.
+        </p>
+        <!--<p class="lead">
+            Głosowanie zostało zakończone. Poniżej znajdują się oddane przez ciebie głosy. Jeśli chcesz zobaczyć wyniki głosowania, przejdź na stronę Wyniki.
+        </p>-->
+    </header>
+    <div class="mb-3">
+        <input class="form-control" id="searchInput" oninput="filterTable()" placeholder="Wyszukaj..." type="text">
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/vote.js' %}"></script>
+    {% if stage == '1' %}
+    <div class="table-responsive">
+        <table class="table table-dark table-striped table-bordered align-middle" id="sortableTable">
+            <thead>
+            <tr>
+                <th scope="col">Grafika</th>
+                <th class="sortable" onclick="sortTable(1)" scope="col">Tytuł<span class="sort-arrow"
+                                                                                   id="arrow-1"></span></th>
+                <th class="sortable" onclick="sortTable(2)" scope="col">Deweloper<span class="sort-arrow"
+                                                                                       id="arrow-2"></span></th>
+                <th class="sortable" onclick="sortTable(3)" scope="col">Gatunek<span class="sort-arrow"
+                                                                                     id="arrow-3"></span></th>
+                <th class="sortable" onclick="sortTable(4)" scope="col">Data wydania<span class="sort-arrow"
+                                                                                          id="arrow-4"></span>
+                </th>
+                <th scope="col">Głos</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for game in games %}
+            <tr>
+                <td class="game-image-col">
+                    <div class="game-image-container">
+                        <img class="game-image big-game-image" src="{{game.image_url}}">
+                    </div>
+                </td>
+                <td>{{ game.name }}</td>
+                <td>{{ game.developer }}</td>
+                <td>{{ game.genre }}</td>
+                <td>{{ game.release_date|date:"c" }}</td>
+                <td>
+                    <div class="action-buttons">
+                        <input type="checkbox" name="{{ game.id }}" id="tak-{{ game.id }}" value="1"
+                            onclick="handleCheckboxChange(this, 1)"
+                               {%if user_votes|get_value:game.id == 1 %} checked {%endif%}
+                        >
+                        <label for="tak-{{ game.id }}">Tak</label>
+
+                        <input id="nie-{{ game.id }}" name="{{ game.id }}" onclick="handleCheckboxChange(this, -1)" type="checkbox"
+                               value="-1"
+                              {%if user_votes|get_value:game.id == -1 %} checked {%endif%}
+                        >
+                        <label for="nie-{{ game.id }}">Nie</label>
+
+
+                        <input id="brak-{{ game.id }}" name="{{ game.id }}" onclick="handleCheckboxChange(this, 0)" type="checkbox"
+                               value="0"
+                        >
+                        <label for="brak-{{ game.id }}" style="display:none;">Brak</label>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% elif stage == '2' %}
+    Obecnie nie ma możliwości zagłosowania w turze 2.
+    {% endif %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/vote.js' %}"></script>
 </body>
 
 </html>
