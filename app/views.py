@@ -130,10 +130,28 @@ def results(request) -> HttpResponse:
 def vote(request) -> HttpResponse:
     stage = request.GET.get('stage', '1')
     user = request.session.get('user', None)
+
     if stage not in ['1', '2']:
         return HttpResponseNotFound('Podana tura nie istnieje')
     if not user:
         return redirect("login")
+
+    now = datetime.date.today()
+    stage_1_start = datetime.date.fromisoformat(settings.STAGES['1']['start'])
+    stage_1_end = datetime.date.fromisoformat(settings.STAGES['1']['end'])
+    stage_2_start = datetime.date.fromisoformat(settings.STAGES['2']['start'])
+    stage_2_end = datetime.date.fromisoformat(settings.STAGES['2']['end'])
+    status = 'waiting' if now < stage_1_start\
+        else 'active' if now <= stage_1_end\
+        else 'waiting_for_runoff' if now < stage_2_start\
+        else 'runoff' if now <= stage_2_end\
+        else 'finished'
+
+    current_active_stage = '1' if status == 'active'\
+        else '2' if status == 'runoff'\
+        else None
+
+    locked_vote = stage != current_active_stage
 
     games = Game.objects.all()
     user_votes = (
@@ -151,6 +169,7 @@ def vote(request) -> HttpResponse:
         template_name='vote.html',
         context={
             'games': games,
+            'locked_vote': locked_vote,
             'stage': stage,
             'user_name': user['name'] if user is not None else None,
             'user_avatar': get_avatar_link(user) if user is not None else None,
