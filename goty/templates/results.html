@@ -36,17 +36,25 @@
                         Zobacz swoje głosy w pierwszej turze
                     </button>
                 {% endif %}
-                <p class="lead">
-                    <h3>
-                        Wyniki pierwszej tury
-                    </h3>
-                </p>
             {% endif %}
         </header>
     </div>
     <div class="results">
+        {% if results_stage_2 is not None %}
+                <p class="lead">
+                    <h1>
+                        Wyniki finałów
+                    </h1>
+                </p>
+            {% include 'partial/runoff_round.html' %}
+        {% endif %}
         {% if results_stage_1 is not None %}
-        {% include 'partial/approval_round.html' %}
+                <p class="lead">
+                    <h1>
+                        Wyniki pierwszej tury
+                    </h1>
+                </p>
+            {% include 'partial/approval_round.html' %}
         {% endif %}
     </div>
     

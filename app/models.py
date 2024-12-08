@@ -41,8 +41,8 @@ def get_votes(stage: int) -> QuerySet:
     return games_with_vote_totals
 
 
-def get_finalists() -> (QuerySet, QuerySet):
-    results = get_votes(1)
+def get_finalists(stage=1) -> (QuerySet, QuerySet):
+    results = get_votes(stage)
     best_games = results.order_by('-margin', 'positive')[:6]
     worst_games = results.order_by('margin', 'negative')[:6]
     return best_games, worst_games

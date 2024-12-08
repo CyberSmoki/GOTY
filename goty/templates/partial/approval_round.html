@@ -21,13 +21,13 @@
         Lista gier nominowanych do Najlepszej Gry Roku 2024:
     </h3>
 </p>
-{% include 'partial/finalists.html' with games=results_stage_1.best_games %}
+{% include 'partial/finalists.html' with results=results_stage_1 games=results_stage_1.best_games %}
 <p class="lead">
     <h3>
         Lista gier nominowanych do Najgorszej Gry Roku 2024:
     </h3>
 </p>
-{% include 'partial/finalists.html' with games=results_stage_1.worst_games %}
+{% include 'partial/finalists.html' with results=results_stage_1 games=results_stage_1.worst_games %}
 <p class="lead">
     <h3>Wyniki</h3>
 </p>

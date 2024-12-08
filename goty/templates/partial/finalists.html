@@ -4,7 +4,7 @@
     <tbody class="result-table">
         <tr>
             <th style="width: 10%;"></th>
-            {% for game in games.data %}
+            {% for game in games %}
             <td class="table-images">
                 <div class="game-image-container-small">
                     <img src="{{game.image_url}}" class="game-image small-game-image">
@@ -14,7 +14,7 @@
         </tr>
         <tr>
             <th></th>
-            {% for game in games.data %}
+            {% for game in games %}
             <td>
                 <h4>{{game.name}}</h4>
             </td>
@@ -22,7 +22,7 @@
         </tr>
         <tr>
             <th></th>
-            {% for game in games.data %}
+            {% for game in games %}
             <td>
                 <h6><i>{{game.developer}}</i></h6>
             </td>
@@ -32,19 +32,20 @@
             <th>
                 Wynik
             </th>
-            {% for game in games.data%}
+            {% for game in games %}
             <td>
-                {{game.margin|intcomma}} ({{game.margin|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
+                {{game.margin|intcomma}} ({{game.margin|div:results.total_voters|mul:100|floatformat:2}}%)
             </td>
             {% endfor %}
         </tr>
+        {% if stage == 1 %}
         <tr>
             <th>
                 Za
             </th>
-            {% for game in games.data %}
+            {% for game in games %}
             <td style="color: #66CCCC">
-                {{game.positive|intcomma}} ({{game.positive|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
+                {{game.positive|intcomma}} ({{game.positive|div:results.total_voters|mul:100|floatformat:2}}%)
             </td>
             {% endfor %}
         </tr>
@@ -52,17 +53,18 @@
             <th>
                 Przeciw
             </th>
-            {% for game in games.data %}
+            {% for game in games %}
             <td style="color: #FF6384">
-                {{game.negative|intcomma}} ({{game.negative|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
+                {{game.negative|intcomma}} ({{game.negative|div:results.total_voters|mul:100|floatformat:2}}%)
             </td>
             {% endfor %}
         </tr>
+        {% endif %}
         <tr>
             <th>
                 Gatunek
             </th>
-            {% for game in games.data %}
+            {% for game in games %}
             <td>
                 {{game.genre}}
             </td>
@@ -72,7 +74,7 @@
             <th>
                 Data wydania
             </th>
-            {% for game in games.data %}
+            {% for game in games %}
             <td>
                 <i>{{game.release_date|date:"j E Y"}}</i>
             </td>
