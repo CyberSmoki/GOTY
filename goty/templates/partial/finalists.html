@@ -32,9 +32,9 @@
             <th>
                 Wynik
             </th>
-            {% for margin in games.margins %}
+            {% for game in games.data%}
             <td>
-                {{margin|intcomma}} ({{margin|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
+                {{game.margin|intcomma}} ({{game.margin|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
             </td>
             {% endfor %}
         </tr>
@@ -42,9 +42,9 @@
             <th>
                 Za
             </th>
-            {% for votes in games.positive %}
+            {% for game in games.data %}
             <td style="color: #66CCCC">
-                {{votes|intcomma}} ({{votes|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
+                {{game.positive|intcomma}} ({{game.positive|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
             </td>
             {% endfor %}
         </tr>
@@ -52,9 +52,9 @@
             <th>
                 Przeciw
             </th>
-            {% for votes in games.negative %}
+            {% for game in games.data %}
             <td style="color: #FF6384">
-                {{votes|intcomma}} ({{votes|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
+                {{game.negative|intcomma}} ({{game.negative|div:results_stage_1.total_voters|mul:100|floatformat:2}}%)
             </td>
             {% endfor %}
         </tr>

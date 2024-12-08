@@ -15,7 +15,7 @@
                 <p>
                     <h3>Koniec pierwszej tury: {{ stage_1_end|date:"l, j E Y" }}</h3>
                 </p>
-                <button class="btn btn-primary btn-lg results-button" onclick="location.href='/vote/1'">
+                <button class="btn btn-primary btn-lg results-button" onclick="location.href='/vote?stage=1'">
                     Przejdź do głosowania
                 </button>
             {% elif status == 'waiting_for_runoff' %}

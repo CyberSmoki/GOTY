@@ -99,7 +99,7 @@ p.lead {
     gap: 10px;
 }
 
-.action-buttons input[type="checkbox"] {
+.action-buttons input {
     display: none;
 }
 

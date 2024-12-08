@@ -1,0 +1,46 @@
+{% load custom_filters %}
+<h2>{{ title }}</h2>
+<div class="table-responsive">
+    <table class="table table-dark table-striped table-bordered align-middle" id="sortableTable">
+        <thead>
+        <tr>
+            <th scope="col">Grafika</th>
+            <th class="sortable" onclick="sortTable(1)" scope="col">Tytuł<span class="sort-arrow"
+                                                                               id="arrow-1"></span></th>
+            <th class="sortable" onclick="sortTable(2)" scope="col">Deweloper<span class="sort-arrow"
+                                                                                   id="arrow-2"></span></th>
+            <th class="sortable" onclick="sortTable(3)" scope="col">Gatunek<span class="sort-arrow"
+                                                                                 id="arrow-3"></span></th>
+            <th class="sortable" onclick="sortTable(4)" scope="col">Data wydania<span class="sort-arrow"
+                                                                                      id="arrow-4"></span>
+            </th>
+            <th scope="col">Głos</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for game in games %}
+        <tr>
+            <td class="game-image-col">
+                <div class="game-image-container">
+                    <img class="game-image big-game-image" src="{{game.image_url}}">
+                </div>
+            </td>
+            <td>{{ game.name }}</td>
+            <td>{{ game.developer }}</td>
+            <td>{{ game.genre }}</td>
+            <td>{{ game.release_date|date:"c" }}</td>
+            <td>
+                <div class="action-buttons">
+                    <input class="yes" type="radio" name="{{ category }}" id="{{ category }}-{{ game.id }}" value="{{ game.id }}"
+                           data-picked=0
+                        onclick="handleRadioChange(this)"
+                           {%if user_votes|get_value:game.id == expected_value %} checked {%endif%}
+                           {%if locked_vote %} disabled {%endif%}
+                    >
+                    <label for="{{ category }}-{{ game.id }}">Zagłosuj</label>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>

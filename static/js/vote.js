@@ -84,6 +84,34 @@ function handleCheckboxChange(selectedCheckbox, value) {
         });
 }
 
+function handleRadioChange(selectedRadio) {
+    const gameId = selectedRadio.value;
+    const groupName = selectedRadio.name;
+    const checked = selectedRadio.checked;
+
+    if (selectedRadio.dataset.picked == "1") {
+        selectedRadio.checked = false;
+    } else {
+        selectedRadio.checked = true;
+    }
+
+    selectedRadio.dataset.picked ^= true;
+
+    const voteData = {
+        stage: 2,
+        gameId: gameId,
+        vote: groupName,
+    };
+
+    sendVote(voteData)
+        .then(result => {
+            console.log('Vote sent:', voteData, result);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
 function getVoteValue(groupName){
     const checkboxes = document.getElementsByName(groupName);
 

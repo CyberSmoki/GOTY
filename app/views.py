@@ -1,15 +1,16 @@
+from app.models import Game, Votes, get_votes, get_finalists
+from app.oauth2 import DiscordWrapper, get_oauth2_link, get_avatar_link
+import datetime
 from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
-from app.oauth2 import DiscordWrapper, get_oauth2_link, get_avatar_link
 from django.shortcuts import render
 from django.conf import settings
-import datetime
-from django.db.models import Count, Q
-from .models import Game, Votes
-from icecream import ic
-from urllib.parse import unquote
+from django.db.models import Sum, Count, Q
+from django.db.models.functions import Coalesce
 import json
+from urllib.parse import unquote
 import uuid
+
 
 def index(request) -> HttpResponse:
     if not request.session.get('user', None):
@@ -20,8 +21,10 @@ def index(request) -> HttpResponse:
     else:
         return redirect("results", permanent=True)
 
+
 def login(request) -> HttpResponse:
     return redirect(get_oauth2_link(), permanent=True)
+
 
 def results(request) -> HttpResponse:
     user = request.session.get('user', None)
@@ -38,74 +41,36 @@ def results(request) -> HttpResponse:
         else 'finished'
 
     if status in ['waiting_for_runoff', 'runoff', 'finished']:
-        best_indices = slice(None, 6)
-        worst_indices = slice(-6, None)
-
         all_games = Game.objects.all()
-        results = (
-            Votes.objects
-            .select_related('game_id')  # Fetch related Game data
-            .values('game_id', 'game_id__name', 'game_id__developer', 'stage')
-            .annotate(
-                positive_votes=Count('value', filter=Q(value=1)),
-                negative_votes=Count('value', filter=Q(value=-1)),
-            )
-        )
+        results = get_votes(stage).order_by('-margin', 'positive')
         games_count = len(all_games)
-        total_votes_count = Votes.objects.aggregate(
-            total_votes=Count('id')
-        )['total_votes']
         distinct_voters_count = Votes.objects.aggregate(
             distinct_voters=Count('user_id', distinct=True)
         )['distinct_voters']
-        positive_votes_count = Votes.objects.aggregate(
-            positive_votes=Count('id', filter=Q(value=1))
-        )['positive_votes']
-        negative_votes_count = Votes.objects.aggregate(
-            negative_votes=Count('id', filter=Q(value=-1))
-        )['negative_votes']
+        votes_count = Votes.objects.aggregate(
+            total=Count('id'),
+            positive=Count('id', filter=Q(value=1)),
+            negative=Count('id', filter=Q(value=-1)),
+        )
 
-        scores = {}
-
-        for row in results:
-            id = row['game_id']
-            yes = row['positive_votes']
-            no = row['negative_votes']
-            scores[id] = {'yes': yes, 'no': no}
-
-        scores = dict(sorted(scores.items(), key=lambda item: item[1]['no']))
-        scores = dict(sorted(scores.items(), key=lambda item: item[1]['yes'] - item[1]['no'], reverse=True))
-        yes_scores = list(map(lambda k: scores[k]['yes'], scores))
-        no_scores = list(map(lambda k: scores[k]['no'], scores))
-        margin_scores = [yes_scores[i] - no_scores[i] for i in range(len(scores))]
-        game_names = list(map(lambda k: all_games.get(id=k).name, scores))
-
-        best_games = list(map(lambda k: all_games.get(id=k), list(scores)[best_indices]))
-        worst_games = list(map(lambda k: all_games.get(id=k), list(scores)[worst_indices]))
+        best_games = results.order_by('-margin', 'positive')
+        worst_games = results.order_by('margin', 'negative')
 
         results_stage_1 = {
             'best_games': {
                 'data': best_games,
-                'margins': margin_scores[best_indices],
-                'positive': yes_scores[best_indices],
-                'negative': no_scores[best_indices],
             },
             'worst_games': {
                 'data': worst_games,
-                'margins': margin_scores[worst_indices],
-                'positive': yes_scores[worst_indices],
-                'negative': no_scores[worst_indices],
             },
             'scores': {
-                'games': game_names,
-                'yes': yes_scores,
-                'no': no_scores,
+                'games': results,
             },
             'games_count': games_count,
-            'total_votes': total_votes_count,
             'total_voters': distinct_voters_count,
-            'positive_votes': positive_votes_count,
-            'negative_votes': negative_votes_count,
+            'total_votes': votes_count['total'],
+            'positive_votes': votes_count['positive'],
+            'negative_votes': votes_count['negative'],
         }
     else:
         results_stage_1 = None
@@ -128,14 +93,6 @@ def results(request) -> HttpResponse:
 
 
 def vote(request) -> HttpResponse:
-    stage = request.GET.get('stage', '1')
-    user = request.session.get('user', None)
-
-    if stage not in ['1', '2']:
-        return HttpResponseNotFound('Podana tura nie istnieje')
-    if not user:
-        return redirect("login")
-
     now = datetime.date.today()
     stage_1_start = datetime.date.fromisoformat(settings.STAGES['1']['start'])
     stage_1_end = datetime.date.fromisoformat(settings.STAGES['1']['end'])
@@ -147,19 +104,42 @@ def vote(request) -> HttpResponse:
         else 'runoff' if now <= stage_2_end\
         else 'finished'
 
-    current_active_stage = '1' if status == 'active'\
-        else '2' if status == 'runoff'\
+    current_active_stage = 1 if status == 'active'\
+        else 2 if status == 'runoff'\
         else None
 
+    stage = request.GET.get('stage', current_active_stage)
+    user = request.session.get('user', None)
+
+    if stage not in ['1', '2']:
+        return HttpResponseNotFound('Podana tura nie istnieje')
+    if not user:
+        return redirect("login")
+
+    stage = int(stage)
+
+    if stage == 2 and status in ['waiting', 'active']:
+        return HttpResponseNotFound('Podana tura nie istnieje')
     locked_vote = stage != current_active_stage
 
-    games = Game.objects.all()
+    if stage == 1:
+        games = get_votes(1)
+    elif stage == 2:
+        best_games, worst_games = get_finalists()
+        games = {
+            'best': best_games,
+            'worst': worst_games,
+        }
+    else:
+        games = None
+        stage = None
+
     user_votes = (
         {
-            vote['game_id']: vote['value']
-            for vote in Votes.objects.filter(
+            game_vote['game_id']: game_vote['value']
+            for game_vote in Votes.objects.filter(
                 user_id=user['id'],
-                stage=int(stage),
+                stage=stage,
             ).values('game_id', 'value')
         }
     )
@@ -171,8 +151,12 @@ def vote(request) -> HttpResponse:
             'games': games,
             'locked_vote': locked_vote,
             'stage': stage,
-            'user_name': user['name'] if user is not None else None,
-            'user_avatar': get_avatar_link(user) if user is not None else None,
+            'user_name': user['name']
+            if user is not None
+            else None,
+            'user_avatar': get_avatar_link(user)
+            if user is not None
+            else None,
             'user_votes': user_votes,
         }
     )
@@ -208,29 +192,31 @@ def vote_post(request) -> JsonResponse:
     data = unquote(data)
     data = json.loads(data)
 
+
     stage = data.get('stage')
     if stage_statuses[status] != stage:
         return JsonResponse({'status': '403', 'reason': 'Wrong stage of voting'})
 
     game_id = data.get('gameId')
-    stage_games = {
-        1: list(value['id'] for value in Game.objects.all().values('id')),
-        2: None,
-    }
-    # TODO: place here six best and worst games from the first stage
-
-    if game_id is None or uuid.UUID(game_id) not in stage_games[stage]:
-        return JsonResponse({'status': '400', 'reason': 'Tried to vote for nonexistent game'})
 
     vote_value = data.get('vote')
 
     stage_votes = {
         'active': [-1, 0, 1],
-        'runoff': None, # then we expect only gameId since it's single choice
+        'runoff': ["best", "worst"],
     }
 
-    if vote_value not in stage_votes[status]:
+    if stage == 1 and vote_value not in stage_votes[status]:
         return JsonResponse({'status': '403', 'reason': 'Wrong vote value'})
+
+    stage_games = {
+        1: list(value['id'] for value in Game.objects.all().values('id')),
+        2: list(value['id'] for value in get_finalists()[{'best': 0, 'worst': 1}[vote_value]].values('id')),
+    }
+
+    game_uuid = uuid.UUID(game_id) if game_id is not None else None
+    if game_id is None or game_uuid not in stage_games[stage]:
+        return JsonResponse({'status': '400', 'reason': 'Tried to vote for nonexistent game'})
 
     if stage == 1:
         Votes.objects.update_or_create(
@@ -240,9 +226,28 @@ def vote_post(request) -> JsonResponse:
             defaults={'value': vote_value}
         )
     elif stage == 2:
-        return JsonResponse({'status': '501', 'reason': 'Stage 2 not implemented yet'})
-        pass
-        # TODO - remove all votes for user games in best/worst category and insert vote for given game
+        value = 1 if vote_value == 'best'\
+            else -1 if vote_value == 'worst'\
+            else 0
+        previous = Votes.objects.filter(
+            user_id=user['id'],
+            stage=stage,
+            value=value,
+        )
+        if previous:
+            previous = previous[0]
+            previous_game_id = previous.game_id_id
+            previous.delete()
+        else:
+            previous_game_id = None
+
+        if previous_game_id is None or previous_game_id != game_uuid:
+            Votes.objects.update_or_create(
+                user_id=user['id'],
+                game_id_id=game_id,
+                stage=stage,
+                value=value,
+            )
     return JsonResponse({'status': '200'})
 
 
@@ -261,6 +266,7 @@ def oauth2(request) -> HttpResponse:
             'avatar': result['avatar'],
         }
     return redirect("index")
+
 
 def logout(request):
     request.session.flush()
