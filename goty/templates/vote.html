@@ -19,23 +19,23 @@
             czasie rzeczywistym.
         </p>
     </header>
+    {% if stage == 1 %}
     <div class="mb-3">
         <input class="form-control" id="searchInput" oninput="filterTable()" placeholder="Wyszukaj..." type="text">
     </div>
-    {% if stage == 1 %}
     <div class="table-responsive">
         <table class="table table-dark table-striped table-bordered align-middle" id="sortableTable">
             <thead>
             <tr>
                 <th scope="col">Grafika</th>
                 <th class="sortable" onclick="sortTable(1)" scope="col">Tytuł<span class="sort-arrow"
-                                                                                   id="arrow-1"></span></th>
+                                                                                   id="sortableTable-arrow-1"></span></th>
                 <th class="sortable" onclick="sortTable(2)" scope="col">Deweloper<span class="sort-arrow"
-                                                                                       id="arrow-2"></span></th>
+                                                                                       id="sortableTable-arrow-2"></span></th>
                 <th class="sortable" onclick="sortTable(3)" scope="col">Gatunek<span class="sort-arrow"
-                                                                                     id="arrow-3"></span></th>
+                                                                                     id="sortableTable-arrow-3"></span></th>
                 <th class="sortable" onclick="sortTable(4)" scope="col">Data wydania<span class="sort-arrow"
-                                                                                          id="arrow-4"></span>
+                                                                                          id="sortableTable-arrow-4"></span>
                 </th>
                 <th scope="col">Głos</th>
             </tr>
@@ -90,6 +90,7 @@
 {%if not locked_vote %}
 <script src="{% static 'js/vote.js' %}"></script>
 {%endif%}
+<script src="{% static 'js/table_functions.js' %}"></script>
 </body>
 
 </html>

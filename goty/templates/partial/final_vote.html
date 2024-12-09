@@ -1,18 +1,18 @@
 {% load custom_filters %}
 <h2>{{ title }}</h2>
 <div class="table-responsive">
-    <table class="table table-dark table-striped table-bordered align-middle" id="sortableTable">
+    <table class="table table-dark table-striped table-bordered align-middle" id="{{ category }}">
         <thead>
         <tr>
             <th scope="col">Grafika</th>
-            <th class="sortable" onclick="sortTable(1)" scope="col">Tytuł<span class="sort-arrow"
-                                                                               id="arrow-1"></span></th>
-            <th class="sortable" onclick="sortTable(2)" scope="col">Deweloper<span class="sort-arrow"
-                                                                                   id="arrow-2"></span></th>
-            <th class="sortable" onclick="sortTable(3)" scope="col">Gatunek<span class="sort-arrow"
-                                                                                 id="arrow-3"></span></th>
-            <th class="sortable" onclick="sortTable(4)" scope="col">Data wydania<span class="sort-arrow"
-                                                                                      id="arrow-4"></span>
+            <th class="sortable" onclick="sortTable(1, '{{ category }}')" scope="col">Tytuł<span class="sort-arrow"
+                                                                               id="{{ category }}-arrow-1"></span></th>
+            <th class="sortable" onclick="sortTable(2, '{{ category }}')" scope="col">Deweloper<span class="sort-arrow"
+                                                                                   id="{{ category }}-arrow-2"></span></th>
+            <th class="sortable" onclick="sortTable(3, '{{ category }}')" scope="col">Gatunek<span class="sort-arrow"
+                                                                                 id="{{ category }}-arrow-3"></span></th>
+            <th class="sortable" onclick="sortTable(4, '{{ category }}')" scope="col">Data wydania<span class="sort-arrow"
+                                                                                      id="{{ category }}-arrow-4"></span>
             </th>
             <th scope="col">Głos</th>
         </tr>
