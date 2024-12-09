@@ -4,8 +4,9 @@
 import pandas as pd
 import numpy as np
 import random
-from app.models import Game, Votes
+from app.models import Game, Votes, get_finalists
 from django.db import transaction
+
 
 def dynamic_weights():
     negative_weight = random.uniform(0.45, 0.5)
@@ -22,7 +23,7 @@ df = pd.DataFrame({
 
 game_ids = list(Game.objects.values_list('id', flat=True))
 
-num_users = 440
+num_users = 10
 vote_values = [-1, 1, 0]
 
 data = []
@@ -39,13 +40,13 @@ for user_id in user_ids:
 
 df = pd.DataFrame(data)
 
-stage_value = 1
+print(df)
 
 votes_to_create = [
     Votes(
         user_id=int(row['user_id']),
         game_id_id=row['game_id_id'],
-        stage=stage_value,
+        stage=1,
         value=row['value']
     )
     for _, row in df.iterrows()
@@ -55,4 +56,39 @@ with transaction.atomic():
     Votes.objects.all().delete()
     Votes.objects.bulk_create(votes_to_create, batch_size=1000)
 
-print(f"Inserted {len(df)} votes.")
+print(f"Inserted {len(df)} votes for first stage.")
+
+data = []
+best_games, worst_games = get_finalists()
+for user_id in user_ids:
+    best_game_id = random.choice(best_games).id
+    worst_game_id = random.choice(worst_games).id
+    data.append({
+        'user_id': user_id,
+        'value': 1,
+        'game_id_id': best_game_id,
+    })
+    data.append({
+        'user_id': user_id,
+        'value': -1,
+        'game_id_id': worst_game_id,
+    })
+
+df = pd.DataFrame(data)
+
+print(df)
+
+votes_to_create = [
+    Votes(
+        user_id=int(row['user_id']),
+        game_id_id=row['game_id_id'],
+        stage=2,
+        value=row['value']
+    )
+    for _, row in df.iterrows()
+]
+
+with transaction.atomic():
+    Votes.objects.bulk_create(votes_to_create, batch_size=1000)
+
+print(f"Inserted {len(df)} votes for second stage.")
