@@ -41,6 +41,7 @@
     </div>
     <div class="results">
         {% if results_stage_2 is not None %}
+        {% include 'partial/winners.html' with results=results_stage_2 best=results_stage_2.best_game worst=results_stage_2.worst_game %}
                 <p class="lead">
                     <h1>
                         Wyniki finałów

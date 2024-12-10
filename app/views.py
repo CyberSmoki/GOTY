@@ -93,6 +93,8 @@ def results(request) -> HttpResponse:
                 'total_votes': votes_count_2['total'],
                 'positive_votes': votes_count_2['positive'],
                 'negative_votes': votes_count_2['negative'],
+                'best_game': best_games[0],
+                'worst_game': worst_games[0],
             }
 
     return render(

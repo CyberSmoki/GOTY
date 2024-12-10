@@ -232,3 +232,7 @@ tbody.result-table tr th, tbody.result-table tr td{
 .table-images{
     width: 15%;
 }
+
+.action-buttons input[type="radio"]:disabled + label {
+    cursor: not-allowed;
+}

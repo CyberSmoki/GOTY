@@ -1,0 +1,58 @@
+{% load humanize %}
+{% load mathfilters %}
+<table class="table table-dark text-center mb-5" style="margin: auto; width: 70%;">
+    <tbody class="result-table">
+        <tr>
+            <td>
+                <h2>Najlepsza Gra 2024</h2>
+            </td>
+            <td>
+                <h2>Najgorsza gra 2024</h2>
+            </td>
+        </tr>
+        <tr>
+            <td class="table-images">
+                <div class="game-image-container-small">
+                    <img src="{{best.image_url}}" class="game-image small-game-image">
+                </div>
+            </td>
+            <td class="table-images">
+                <div class="game-image-container-small">
+                    <img src="{{worst.image_url}}" class="game-image small-game-image">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h4>{{best.name}}</h4>
+            </td>
+            <td>
+                <h4>{{worst.name}}</h4>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h6><i>{{best.developer}}</i></h6>
+            </td>
+            <td>
+                <h6><i>{{worst.developer}}</i></h6>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{best.genre}}
+            </td>
+            <td>
+                {{worst.genre}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <i>{{best.release_date|date:"j E Y"}}</i>
+            </td>
+            <td>
+                <i>{{worst.release_date|date:"j E Y"}}</i>
+            </td>
+        </tr>
+    </tbody>
+</table>
