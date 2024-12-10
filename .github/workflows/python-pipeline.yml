@@ -1,0 +1,55 @@
+name: Build and Deploy to Azure Web App
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    environment:
+      name: 'dev-api'
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    - name: Create Virtual Environment and install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        python --version
+        
+    - name: Upload artifact for deployment jobs
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-app
+        path: |
+          .
+          !venv/
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: 'dev-api'
+    needs: build
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: python-app
+        path: .
+    - name: Azure WebApp
+      id: deploy-to-webapp
+      uses: Azure/webapps-deploy@v2
+      with:
+        # Name of the Azure Web App
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        # Applies to Web Apps(Windows and Linux) and Web App Containers(linux). Multi container scenario not supported. Publish profile (*.publishsettings) file contents with Web Deploy secrets
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+            
+            
