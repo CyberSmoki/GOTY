@@ -29,6 +29,11 @@ button:hover.results-button {
     box-shadow: 0 0 10px #198754;
 }
 
+button:hover.postresults-button {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #6c757d;
+}
+
 button img.dslogo {
     width: 30px;
     height: 30px;
@@ -62,6 +67,11 @@ img.small-game-image{
 img.big-game-image{
     width: 230px;
     height: 107.5px;
+}
+
+img.large-game-image{
+    width: 430px;
+    height: 200px;
 }
 
 td.game-image-col{

@@ -32,8 +32,15 @@
             {% endif %}
             {% if results_stage_1 is not None %}
                 {% if user_name is not None %}
-                    <button class="btn btn-secondary btn-lg results-button" onclick="location.href='/vote?stage=1'">
+                    <button class="btn btn-secondary btn-lg postresults-button" onclick="location.href='/vote?stage=1'">
                         Zobacz swoje głosy w pierwszej turze
+                    </button>
+                {% endif %}
+            {% endif %}
+            {% if results_stage_2 is not None %}
+                {% if user_name is not None %}
+                    <button class="btn btn-secondary btn-lg postresults-button" onclick="location.href='/vote?stage=2'">
+                        Zobacz swoje głosy w drugiej turze
                     </button>
                 {% endif %}
             {% endif %}
