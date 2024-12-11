@@ -200,6 +200,7 @@ p.lead {
     font-size: 36px;
     cursor: pointer;
     color: white;
+    user-select: none;
 }
 
 img.result-image{

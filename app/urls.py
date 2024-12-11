@@ -10,5 +10,6 @@ urlpatterns = [
     path("app/login", views.login, name="login"),
     path("app/logout", views.logout, name="logout"),
     path("app/oauth2", views.oauth2, name="oauth2"),
-    path("app/vote", views.vote_post, name="vote_post")
+    path("app/vote", views.vote_post, name="vote_post"),
+    path("faq", views.faq, name="faq")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
