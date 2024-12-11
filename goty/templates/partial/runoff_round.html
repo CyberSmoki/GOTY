@@ -1,0 +1,30 @@
+{% load static %}
+{% load humanize %}
+{% load custom_filters %}
+<p class="lead">
+    Liczba gier: <b>{{ results_stage_2.games_count|intcomma }}</b>
+</p>
+<p class="lead">
+    Liczba głosujących w pierwszej turze: <b>{{ results_stage_2.total_voters|intcomma }}</b>
+</p>
+<p class="lead">
+    Łączna liczba głosów: <b>{{ results_stage_2.total_votes|intcomma }}</b>
+</p>
+<p class="lead">
+    Liczba głosów za: <b>{{ results_stage_2.positive_votes|intcomma }}</b>
+</p>
+<p class="lead">
+    Liczba głosów przeciw: <b>{{ results_stage_2.negative_votes|intcomma }}</b>
+</p>
+<p class="lead">
+    <h3>
+        Lista gier nominowanych do Najlepszej Gry Roku 2024:
+    </h3>
+</p>
+{% include 'partial/finalists.html' with results=results_stage_2 games=results_stage_2.best_games %}
+<p class="lead">
+    <h3>
+        Lista gier nominowanych do Najgorszej Gry Roku 2024:
+    </h3>
+</p>
+{% include 'partial/finalists.html' with results=results_stage_2 games=results_stage_2.worst_games %}
