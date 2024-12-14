@@ -12,8 +12,7 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 # automatically change used settings file depending if server is hosted locally or on Azure
-#settings_module = 'goty.deployment' if 'DEPLOYMENT' in os.environ else 'goty.settings'
-settings_module = 'goty.deployment'
+settings_module = 'goty.deployment' if 'DEPLOYMENT' in os.environ else 'goty.settings'
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
 
