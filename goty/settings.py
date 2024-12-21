@@ -9,14 +9,14 @@ env = environ.Env(
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = env('DEBUG')
+DEBUG = os.getenv('DEBUG')
 
-API_ENDPOINT = env('API_ENDPOINT')
-CLIENT_ID = env('CLIENT_ID')
-CLIENT_SECRET = env('CLIENT_SECRET')
-REDIRECT_URI = env('REDIRECT_URI')
+API_ENDPOINT = os.getenv('API_ENDPOINT')
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+REDIRECT_URI = os.getenv('REDIRECT_URI')
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,14 +37,14 @@ MIDDLEWARE = [
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
-            'driver': env('DB_DRIVER'),
-            'extra_params': env('DB_EXTRA_PARAMS'),
+            'driver': os.getenv('DB_DRIVER'),
+            'extra_params': os.getenv('DB_EXTRA_PARAMS'),
         }
     }
 }
@@ -88,12 +88,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 STAGES = {
     "1": {
-        "start": env('STAGE_1_START'),
-        "end": env('STAGE_1_END'),
+        "start": os.getenv('STAGE_1_START'),
+        "end": os.getenv('STAGE_1_END'),
     },
     "2": {
-        "start": env('STAGE_2_START'),
-        "end": env('STAGE_2_END'),
+        "start": os.getenv('STAGE_2_START'),
+        "end": os.getenv('STAGE_2_END'),
     }
 }
 
