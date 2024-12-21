@@ -18,15 +18,16 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: '3.9'
+        cache: 'pip'
     - name: Create Virtual Environment and install dependencies
       run: |
-        python -m venv venv
+        python3 -m venv venv
         source venv/bin/activate
         pip install -r requirements.txt
-        python --version
+        python3 --version
         
     - name: Upload artifact for deployment jobs
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: python-app
         path: |
@@ -39,7 +40,7 @@ jobs:
       name: 'dev-api'
     needs: build
     steps:
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v3
       with:
         name: python-app
         path: .
