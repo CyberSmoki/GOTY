@@ -39,7 +39,8 @@ class DiscordWrapper:
     https://discord.com/developers/docs/topics/oauth2#authorization-code-grant-access-token-response
     """
 
-    def process_code(self, code: str) -> dict | None:
+    
+    def process_code(self, code: str):
         token = self.exchange_code(code)
         if token is None:
             return None
@@ -48,7 +49,7 @@ class DiscordWrapper:
         self.revoke_access_token(token)
         return user
 
-    def exchange_code(self, code: str) -> dict | None:
+    def exchange_code(self, code: str):
         data = {
             'grant_type': 'authorization_code',
             'code': code,
