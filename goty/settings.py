@@ -7,9 +7,9 @@ env = environ.Env(
     DB_EXTRA_PARAMS=(str, ""),
 )
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+#environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = '125482375983245122332523485423954368439423523532759082573298512428982390'
 
 DEBUG = os.getenv('DEBUG')
 
